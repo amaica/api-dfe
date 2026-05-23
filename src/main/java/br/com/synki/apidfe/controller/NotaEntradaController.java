@@ -1,15 +1,17 @@
 package br.com.synki.apidfe.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.synki.apidfe.service.DistribuicaoService;
 import br.com.synki.apidfe.service.NotaEntradaService;
 
 @RestController
 @RequestMapping("/api/v1/notaEntrada")
-@Slf4j
+
 public class NotaEntradaController {
 
     private final NotaEntradaService notaEntradaService;

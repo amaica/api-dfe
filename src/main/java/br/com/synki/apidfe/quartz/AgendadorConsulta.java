@@ -1,6 +1,5 @@
 package br.com.synki.apidfe.quartz;
 
-import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -8,7 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.synki.apidfe.service.DistribuicaoService;
 
 @Service
-@Slf4j
+
 @DisallowConcurrentExecution
 public class AgendadorConsulta {
 

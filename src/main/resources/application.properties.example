@@ -1,0 +1,16 @@
+# Copie para application.properties ou defina as variáveis no systemd (.env)
+
+spring.application.name=apidfe
+
+spring.security.user.name=${DFE_API_USER:dfeapi}
+spring.security.user.password=${DFE_API_PASSWORD:troque-me}
+
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:dfe-service}?createDatabaseIfNotExist=true&serverTimezone=UTC
+spring.datasource.username=${MYSQL_USERNAME:root}
+spring.datasource.password=${MYSQL_PASSWORD:changeme}
+
+spring.jpa.hibernate.ddl-auto=none
+spring.flyway.enabled=true
+spring.flyway.validate-on-migrate=false
+
+server.port=${DFE_SERVER_PORT:9090}

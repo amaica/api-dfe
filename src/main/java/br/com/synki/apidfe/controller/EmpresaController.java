@@ -1,14 +1,23 @@
 package br.com.synki.apidfe.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import br.com.synki.apidfe.entity.Empresa;
 import br.com.synki.apidfe.service.EmpresaService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/empresa")
-@Slf4j
+
 public class EmpresaController {
 
     private final EmpresaService empresaService;
@@ -20,6 +29,32 @@ public class EmpresaController {
         try {
             empresaService.salvar(empresa);
             return ResponseEntity.ok(empresa);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * Cadastro via multipart (recomendado para certificado .pfx/.p12).
+     *
+     * Exemplos:
+     * - curl -F "cpfCnpj=123" -F "uf=SP" -F "ambiente=HOMOLOGACAO" -F "senhaCertificado=xxx" -F "certificado=@a1.pfx" http://localhost:9090/api/v1/empresa/upload
+     */
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> salvarMultipart(
+            @RequestParam("cpfCnpj") String cpfCnpj,
+            @RequestParam(value = "razaoSocial", required = false) String razaoSocial,
+            @RequestParam(value = "uf", required = false) String uf,
+            @RequestParam(value = "ambiente", required = false) String ambiente,
+            @RequestParam(value = "senhaCertificado", required = false) String senhaCertificado,
+            @RequestParam(value = "tipoPessoa", required = false) String tipoPessoa,
+            @RequestParam(value = "certificado") MultipartFile certificado
+    ) {
+        try {
+            Empresa empresa = empresaService.fromMultipart(cpfCnpj, razaoSocial, uf, ambiente, senhaCertificado, tipoPessoa, certificado);
+            Empresa saved = empresaService.salvar(empresa);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());

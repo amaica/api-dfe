@@ -1,8 +1,11 @@
 package br.com.synki.apidfe.entity;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.swconsultoria.nfe.dom.enuns.AmbienteEnum;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,16 +13,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import lombok.Data;
+import jakarta.persistence.Table;
 
 @Entity
-@SequenceGenerator(name = "EmpresaSeq", sequenceName = "SEQ_EMPRESA", allocationSize = 1)
-@Data
-public class Empresa {
+@Table(name = "empresa_dfe")
 
+public class Empresa implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(generator = "EmpresaSeq", strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
 	private Long id;
 	private String cpfCnpj;
 	private String razaoSocial;
@@ -30,6 +34,7 @@ public class Empresa {
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private byte[] certificado;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String senhaCertificado;
 	private String nsu;
 	@Column(name = "TIPO_PESSOA")

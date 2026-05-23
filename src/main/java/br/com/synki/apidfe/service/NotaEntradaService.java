@@ -1,17 +1,17 @@
 package br.com.synki.apidfe.service;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import br.com.synki.apidfe.entity.NotaEntrada;
 import br.com.synki.apidfe.exception.SistemaException;
 import br.com.synki.apidfe.repository.NotaEntradaRepository;
 import br.com.synki.apidfe.util.ArquivoUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.List;
 
 @Service
-@Slf4j
+
 public class NotaEntradaService {
 
     private final NotaEntradaRepository repository;
