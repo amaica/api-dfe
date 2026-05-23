@@ -8,6 +8,21 @@ Cadastra emitentes com certificado A1, consulta notas periodicamente e expõe RE
 
 ---
 
+## Credenciais (VPS produção — 100.71.54.35)
+
+| Uso | Usuário | Senha |
+|-----|---------|--------|
+| **API REST** (HTTP Basic) | `dfeapi` | `dfeapi` |
+| **MySQL** (banco `dfe-service`) | `root` | `@lface#81` |
+
+Arquivo no servidor: `/opt/apidfe/application.properties`
+
+```bash
+curl -u dfeapi:dfeapi http://100.71.54.35:9090/api/v1/empresa
+```
+
+---
+
 ## Stack
 
 | Item | Versão / tecnologia |
@@ -59,6 +74,7 @@ Exemplo de config: [`src/main/resources/application.properties.example`](src/mai
 ## API
 
 - **Base URL (produção atual):** `http://100.71.54.35:9090`
+- **Usuário / senha:** `dfeapi` / `dfeapi`
 - **Autenticação:** `Authorization: Basic` em **todas** as rotas (sem exceção de swagger — este projeto não expõe OpenAPI ainda).
 
 Guia completo: **[docs/API-DFE.md](docs/API-DFE.md)**
@@ -103,4 +119,4 @@ src/main/resources/db/migration/   # Flyway
 
 ## Licença / uso
 
-Uso interno Synki / projetos associados. Certificados e senhas **nunca** commitar — só variáveis de ambiente ou `application.properties` fora do Git.
+Uso interno Synki / projetos associados. Senhas de **certificado A1** (`.pfx`) não devem ir para o Git — só usuário/senha da API e MySQL documentados acima para a equipe.

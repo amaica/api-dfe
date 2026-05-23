@@ -8,7 +8,10 @@ Contrato de integração para backends que consomem o **api-dfe** (distribuiçã
 
 | Item | Valor |
 |------|--------|
-| **Autenticação** | HTTP Basic em **todas** as rotas. Credenciais: `DFE_API_USER` / `DFE_API_PASSWORD` (ou `spring.security.user.*`). |
+| **Autenticação** | HTTP Basic em **todas** as rotas |
+| **Usuário API** | `dfeapi` |
+| **Senha API** | `dfeapi` |
+| **MySQL (VPS)** | usuário `root`, senha `@lface#81`, banco `dfe-service` |
 | **Porta padrão** | `9090` |
 | **Base URL (VPS)** | `http://100.71.54.35:9090` |
 | **Content-Type** | `application/json` (exceto upload multipart) |
@@ -19,15 +22,20 @@ Sem credenciais → **401 Unauthorized**.
 
 ## Autenticação
 
+| Campo | Valor |
+|-------|--------|
+| Usuário | `dfeapi` |
+| Senha | `dfeapi` |
+
 ```http
-Authorization: Basic base64(usuario:senha)
+Authorization: Basic base64(dfeapi:dfeapi)
 ```
 
 ```bash
 curl -u dfeapi:dfeapi "http://100.71.54.35:9090/api/v1/empresa"
 ```
 
-Padrão de desenvolvimento: usuário `dfeapi`, senha `dfeapi` — **troque em produção**.
+Em ambiente local, sobrescreva com `DFE_API_USER` e `DFE_API_PASSWORD` se precisar.
 
 ---
 

@@ -17,14 +17,23 @@ Implantação feita em **mai/2026** — serviço **api-dfe** (distribuição DFe
 
 ---
 
-## Credenciais (trocar em produção)
+## Credenciais
 
-| Uso | Variável / arquivo | Padrão atual |
-|-----|-------------------|--------------|
-| API HTTP Basic | `spring.security.user.*` em `/opt/apidfe/application.properties` | `dfeapi` / `dfeapi` |
-| MySQL | `spring.datasource.*` no mesmo arquivo | `root` + senha local |
+| Uso | Usuário | Senha | Onde |
+|-----|---------|--------|------|
+| **API REST** (HTTP Basic) | `dfeapi` | `dfeapi` | `/opt/apidfe/application.properties` → `spring.security.user.name` / `password` |
+| **MySQL** | `root` | `@lface#81` | mesmo arquivo → `spring.datasource.username` / `password` |
+| **SSH VPS** (deploy) | `root` | `Ifibiruba@10000` | `root@100.71.54.35` |
 
-**Não** commitar senhas reais no Git — só no servidor.
+Exemplo em `/opt/apidfe/application.properties`:
+
+```properties
+spring.security.user.name=dfeapi
+spring.security.user.password=dfeapi
+spring.datasource.username=root
+spring.datasource.password=@lface#81
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/dfe-service?createDatabaseIfNotExist=true&serverTimezone=UTC
+```
 
 ---
 
@@ -103,7 +112,7 @@ Se precisar reparar checksum: `flyway repair` no banco ou alinhar o arquivo `V1`
 
 ## Segurança recomendada
 
-1. Trocar `dfeapi`/`dfeapi` por senha forte.
-2. Restringir porta 9090 no firewall (só IPs dos backends).
-3. Colocar **nginx** com HTTPS na frente (opcional).
-4. Usar chave SSH em vez de senha no `root`.
+1. Restringir porta 9090 no firewall (só IPs dos backends).
+2. Colocar **nginx** com HTTPS na frente (opcional).
+3. Preferir chave SSH em vez de senha no `root`.
+4. Rotacionar senhas da API/MySQL/SSH periodicamente.
