@@ -10,6 +10,7 @@ Implantação feita em **mai/2026** — serviço **api-dfe** (distribuição DFe
 |---------|--------|
 | `/opt/apidfe/api-dfe-11.jar` | Spring Boot (Java 17) |
 | `/opt/apidfe/application.properties` | MySQL, HTTP Basic, Flyway (`ddl-auto=none`) |
+| `/opt/apidfe/logs/apidfe.log` | Log da aplicação (rotação automática) |
 | Banco MySQL `dfe-service` | Tabelas `empresa_dfe`, `nota_entrada` |
 | `systemd` **`apidfe.service`** | Serviço habilitado no boot |
 
@@ -33,6 +34,30 @@ spring.security.user.password=dfeapi
 spring.datasource.username=root
 spring.datasource.password=@lface#81
 spring.datasource.url=jdbc:mysql://127.0.0.1:3306/dfe-service?createDatabaseIfNotExist=true&serverTimezone=UTC
+
+# Log em arquivo
+logging.file.name=/opt/apidfe/logs/apidfe.log
+logging.logback.rollingpolicy.max-file-size=50MB
+logging.logback.rollingpolicy.max-history=14
+```
+
+---
+
+## Logs
+
+### Arquivo (recomendado — `tail`)
+
+```bash
+tail -f /opt/apidfe/logs/apidfe.log
+tail -100 /opt/apidfe/logs/apidfe.log
+```
+
+Rotação: até **50 MB** por arquivo, **14** dias, **500 MB** total.
+
+### Systemd (alternativa)
+
+```bash
+journalctl -u apidfe -f
 ```
 
 ---
@@ -56,7 +81,7 @@ Comandos:
 ```bash
 systemctl status apidfe
 systemctl restart apidfe
-journalctl -u apidfe -f
+tail -f /opt/apidfe/logs/apidfe.log
 ```
 
 ---
