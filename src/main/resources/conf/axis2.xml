@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<axisconfig name="AxisJava2">
+    <parameter name="disableChunking">true</parameter>
+    <transportSender name="http"
+        class="org.apache.axis2.transport.http.CommonsHTTPTransportSender">
+        <parameter name="PROTOCOL">HTTP/1.1</parameter>
+        <parameter name="Transfer-Encoding">false</parameter>
+    </transportSender>
+    <transportSender name="https"
+        class="org.apache.axis2.transport.http.CommonsHTTPTransportSender">
+        <parameter name="PROTOCOL">HTTP/1.1</parameter>
+        <parameter name="Transfer-Encoding">false</parameter>
+    </transportSender>
+</axisconfig>

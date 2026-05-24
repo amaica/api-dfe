@@ -1,7 +1,10 @@
 package br.com.synki.apidfe.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -15,6 +18,7 @@ import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -65,6 +69,12 @@ public class DistribuicaoService {
 	@Autowired(required = false)
 	private JdbcTemplate jdbc;
 
+	@Value("${nfe.schemas-path:/opt/apidfe/schemas}")
+	private String schemasPath;
+
+	@Value("${nfe.cacert-path:/opt/apidfe/cacert}")
+	private String cacertPath;
+
 	public DistribuicaoService(EmpresaRepository empresaRepository, NotaEntradaService notaEntradaService) {
 		this.empresaRepository = empresaRepository;
 		this.notaEntradaService = notaEntradaService;
@@ -102,7 +112,12 @@ public class DistribuicaoService {
 					retorno = Nfe.distribuicaoDfe(configuracao, tipoPessoa, empresa.getCpfCnpj(),
 							ConsultaDFeEnum.NSU, nsuAtual);
 				} catch (Exception e) {
-					log.error("Erro na chamada distribuicaoDfe (nsu={}): {}", nsuAtual, e.getMessage(), e);
+					Throwable cause = e;
+					while (cause.getCause() != null) {
+						cause = cause.getCause();
+					}
+					log.error("Erro na chamada distribuicaoDfe (nsu={}): {} — causa: {}",
+							nsuAtual, e.getMessage(), cause.getClass().getSimpleName() + ": " + cause.getMessage(), e);
 					// Para não travar o ciclo, avança NSU artificialmente 1 posição e tenta seguir
 					nsuAtual = incrementarNsuSeguro(nsuAtual);
 					empresa.setNsu(nsuAtual);
@@ -384,7 +399,9 @@ public class DistribuicaoService {
 	private ConfiguracoesNfe criaConfiguracao(Empresa empresa) throws CertificadoException {
 		Certificado certificado = CertificadoService.certificadoPfxBytes(empresa.getCertificado(),
 				empresa.getSenhaCertificado());
-		// Se UF inválida, tenta um fallback para evitar travar
+		// java-nfe só monta HttpClient com certificado A1 quando multithreading=true (StubUtil)
+		certificado.setModoMultithreading(true);
+
 		EstadosEnum uf;
 		try {
 			uf = EstadosEnum.valueOf(empresa.getUf());
@@ -392,8 +409,27 @@ public class DistribuicaoService {
 			log.warn("UF inválida '{}' para empresa {}. Usando fallback RS.", empresa.getUf(), empresa.getCpfCnpj());
 			uf = EstadosEnum.RS;
 		}
-		return ConfiguracoesNfe.criarConfiguracoes(uf, empresa.getAmbiente(),
-				certificado, "/d/teste/nfe/schemas");
+		ConfiguracoesNfe config = ConfiguracoesNfe.criarConfiguracoes(uf, empresa.getAmbiente(),
+				certificado, schemasPath);
+		// Cacert customizado opcional (java-nfe já traz truststore embarcado)
+		if (Files.isRegularFile(Path.of(cacertPath))) {
+			aplicarCacert(config);
+		}
+		return config;
+	}
+
+	private void aplicarCacert(ConfiguracoesNfe config) {
+		Path path = Path.of(cacertPath);
+		if (!Files.isRegularFile(path)) {
+			log.warn("Arquivo cacert não encontrado em {} — usando truststore padrão do java-nfe", cacertPath);
+			return;
+		}
+		try {
+			byte[] cacertBytes = Files.readAllBytes(path);
+			config.setCacert(new ByteArrayInputStream(cacertBytes));
+		} catch (IOException e) {
+			log.warn("Falha ao carregar cacert {}: {}", cacertPath, e.getMessage());
+		}
 	}
 
 	// ---------- Utilidades de salvamento tolerante ----------

@@ -135,6 +135,34 @@ Se precisar reparar checksum: `flyway repair` no banco ou alinhar o arquivo `V1`
 
 ---
 
+## SEFAZ / SSL (obrigatório na VPS)
+
+Distribuição DFe usa `https://www1.nfe.fazenda.gov.br/NFeDistribuicaoDFe/NFeDistribuicaoDFe.asmx`.
+
+Instalar cadeia SERPRO/ICP-Brasil no SO (já aplicado em mai/2026):
+
+```bash
+curl -fsSL -o /usr/local/share/ca-certificates/icpbrasilv10.crt https://repositorio.serpro.gov.br/docs/icpbrasilv10.crt
+curl -fsSL -o /usr/local/share/ca-certificates/serprossl.crt https://repositorio.serpro.gov.br/cadeias/serprossl.crt
+update-ca-certificates
+curl -sS -o /dev/null -w "%{http_code}\n" https://nfe.svrs.rs.gov.br/ws/NfeDistribuicaoDFe/NfeDistribuicaoDFe.asmx
+# Esperado: 403 (sem certificado cliente) — não deve falhar SSL
+```
+
+Paths da aplicação:
+
+| Item | Caminho |
+|------|---------|
+| Schemas XSD | `/opt/apidfe/schemas` |
+| Cacert java-nfe (opcional) | `/opt/apidfe/cacert` |
+| Log | `/opt/apidfe/logs/apidfe.log` |
+
+**Importante:** o java-nfe só envia o certificado A1 na chamada HTTPS com `Multithreading=true` (já configurado no código).
+
+Se o log mostrar `Connection or outbound has closed` com certificado válido, verifique: senha do `.pfx` no cadastro, certificado de produção, e se o IP da VPS não está bloqueado pela SEFAZ.
+
+---
+
 ## Segurança recomendada
 
 1. Restringir porta 9090 no firewall (só IPs dos backends).
