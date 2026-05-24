@@ -30,6 +30,7 @@ public class Empresa implements Serializable {
 	private String uf;
 
 	@Enumerated(EnumType.STRING)
+	@Column(length = 32)
 	private AmbienteEnum ambiente;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

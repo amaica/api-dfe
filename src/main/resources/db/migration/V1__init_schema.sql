@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS empresa_dfe (
   cpf_cnpj VARCHAR(32) NOT NULL,
   razao_social VARCHAR(255) NULL,
   uf VARCHAR(2) NULL,
-  ambiente ENUM('homologacao','producao') NULL,
+  ambiente VARCHAR(32) NULL,
   certificado LONGBLOB NOT NULL,
   senha_certificado VARCHAR(255) NULL,
   nsu VARCHAR(32) NULL,

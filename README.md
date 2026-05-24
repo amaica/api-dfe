@@ -47,14 +47,14 @@ curl -u dfeapi:dfeapi http://100.71.54.35:9090/api/v1/empresa
 
 ```bash
 cd api-dfePsk
+cp application-local.properties.example application-local.properties   # edite a senha do MySQL
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64   # ajuste se precisar
-export MYSQL_PASSWORD=sua_senha
-export DFE_API_USER=dfeapi
-export DFE_API_PASSWORD=dfeapi
 
 mvn -DskipTests package
-java -jar target/api-dfe-11.jar
+java --add-opens java.base/java.nio.charset=ALL-UNNAMED -jar target/api-dfe-11.jar
 ```
+
+O arquivo **`application-local.properties`** na raiz do projeto (gitignored) sobrescreve MySQL e log local. Sem ele, o padrão é `MYSQL_PASSWORD=changeme` e a subida falha se o MySQL local não tiver essa senha.
 
 Porta padrão: **9090** (`DFE_SERVER_PORT` ou `server.port`).
 
